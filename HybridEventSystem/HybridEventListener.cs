@@ -1,4 +1,4 @@
-﻿namespace HES;
+﻿namespace Acrux.EventSystems.HES;
 
 /// <summary>
 /// Manages the behaviour taken in the invokation of an event from a <see cref="HybridEventDispatcher{TArgs}"/>.<br></br>
