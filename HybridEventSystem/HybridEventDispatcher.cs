@@ -77,7 +77,7 @@ public class HybridEventDispatcher<TCorroborateArgs, TClaimArgs, TInvariantArgs>
 
 public class HybridEventDispatcher<TCorroborateArgs, TBehaviourArgs> : HybridEventDispatcher<TCorroborateArgs, TBehaviourArgs, TBehaviourArgs>
 {
-	public void Invoke(TCorroborateArgs corroborateArgs, TBehaviourArgs behaviourArgs)
+	public void Invoke(ValueOrFunc<TCorroborateArgs> corroborateArgs, ValueOrFunc<TBehaviourArgs> behaviourArgs)
 	{
 		Invoke(corroborateArgs, behaviourArgs, behaviourArgs);
 	}
@@ -85,7 +85,7 @@ public class HybridEventDispatcher<TCorroborateArgs, TBehaviourArgs> : HybridEve
 
 public class HybridEventDispatcher<TArgs> : HybridEventDispatcher<TArgs, TArgs>
 {
-	public void Invoke(TArgs args)
+	public void Invoke(ValueOrFunc<TArgs> args)
 	{
 		Invoke(args, args, args);
 	}
