@@ -1,21 +1,10 @@
 ﻿namespace Acrux.EventSystems.HES;
 
-/// <summary>
-/// Manages the invokation of an event, where different <see cref="HybridEventListener{TArgs}"/> are attached to in.<br></br>
-/// When invoked the handler asks the listeners one by one in order if they want to "claim" the event or "reject" it.<br></br>
-/// After a listener "claims" an event, its functionality is invoked and the dispatch finishes.
-/// </summary>
-/// <typeparam name="TArgs"></typeparam>
-public class HybridEventDispatcher<TArgs>
+public class HybridEventDispatcher<TCorroborateArgs, TClaimArgs, TInvariantArgs>
 {
-	private List<HybridEventListener<TArgs>> Listeners { get; } = [];
+	private List<HybridEventListener<TCorroborateArgs, TClaimArgs, TInvariantArgs>> Listeners { get; } = [];
 
-	/// <summary>
-	/// Notifies all <see cref="Listeners"/> in order to "claim" the event and
-	/// execute the claimer behaviour.
-	/// </summary>
-	/// <param name="args">The arguments of the event raise.</param>
-	public void Invoke(TArgs args)
+	public void Invoke(ValueOrFunc<TCorroborateArgs> corroborateArgs, ValueOrFunc<TClaimArgs> claimArgs, ValueOrFunc<TInvariantArgs> invariantArgs)
 	{
 		Console.WriteLine("\nDispatching...");
 		if (Listeners.Count == 0)
@@ -29,14 +18,16 @@ public class HybridEventDispatcher<TArgs>
 		{
 			//Execute the listener invariant behaviour.
 			Console.WriteLine("Invoking invariant behaviour...");
-			listener.InvarintBehaviour?.Invoke(args);
+			TInvariantArgs _invariantArgs = invariantArgs.IsValue ? invariantArgs.Value : invariantArgs.Func.Invoke();
+			listener.InvarintBehaviour?.Invoke(_invariantArgs);
 			Console.WriteLine("Invariant behaviour invoked.");
 
 			// Ask if listener wants to execute its "calimed behaviour"
 			// (Only if event isn't already claimed)
 			if (wasEventClaimed) continue;
 			Console.WriteLine("Asking if listener will claim this event dispatch...");
-			if (!(listener.CorroborateClaim?.Invoke(args) ?? false))
+			TCorroborateArgs _corroborateArgs = corroborateArgs.IsValue ? corroborateArgs.Value : corroborateArgs.Func.Invoke();
+			if (!(listener.CorroborateClaim?.Invoke(_corroborateArgs) ?? false))
 			{
 				Console.WriteLine("Listener rejected this event dispatch.");
 				continue;
@@ -44,7 +35,8 @@ public class HybridEventDispatcher<TArgs>
 			Console.WriteLine("Listener claimed this event dispatch.");
 
 			Console.WriteLine("Invoking claimed behaviour...");
-			listener.ClaimedBehaviour?.Invoke(args);
+			TClaimArgs _claimArgs = claimArgs.IsValue ? claimArgs.Value : claimArgs.Func.Invoke();
+			listener.ClaimedBehaviour?.Invoke(_claimArgs);
 			Console.WriteLine("Claimed behaviour invoked.");
 			wasEventClaimed = true;
 		}
@@ -56,7 +48,7 @@ public class HybridEventDispatcher<TArgs>
 	/// Attaches an <see cref="HybridEventListener{TArgs}"/> to this dispatcher.
 	/// </summary>
 	/// <param name="listener">The <see cref="HybridEventListener{TArgs}"/> to attach.</param>
-	public void Add(HybridEventListener<TArgs> listener)
+	public void Add(HybridEventListener<TCorroborateArgs, TClaimArgs, TInvariantArgs> listener)
 	{
 		if (Listeners.Contains(listener)) return;
 
@@ -69,7 +61,7 @@ public class HybridEventDispatcher<TArgs>
 	/// Detaches an <see cref="HybridEventListener{TArgs}"/> from this dispatcher.
 	/// </summary>
 	/// <param name="listener">The <see cref="HybridEventListener{TArgs}"/> to attach.</param>
-	public void Remove(HybridEventListener<TArgs> listener)
+	public void Remove(HybridEventListener<TCorroborateArgs, TClaimArgs, TInvariantArgs> listener)
 	{
 		if (!Listeners.Contains(listener)) return;
 
@@ -80,5 +72,21 @@ public class HybridEventDispatcher<TArgs>
 	internal void ReorderListeners()
 	{
 		Listeners.OrderBy(x => x.Priority);
+	}
+}
+
+public class HybridEventDispatcher<TCorroborateArgs, TBehaviourArgs> : HybridEventDispatcher<TCorroborateArgs, TBehaviourArgs, TBehaviourArgs>
+{
+	public void Invoke(TCorroborateArgs corroborateArgs, TBehaviourArgs behaviourArgs)
+	{
+		Invoke(corroborateArgs, behaviourArgs, behaviourArgs);
+	}
+}
+
+public class HybridEventDispatcher<TArgs> : HybridEventDispatcher<TArgs, TArgs>
+{
+	public void Invoke(TArgs args)
+	{
+		Invoke(args, args, args);
 	}
 }

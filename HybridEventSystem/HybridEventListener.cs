@@ -3,21 +3,26 @@
 /// <summary>
 /// Manages the behaviour taken in the invokation of an event from a <see cref="HybridEventDispatcher{TArgs}"/>.<br></br>
 /// </summary>
-/// <typeparam name="TArgs"></typeparam>
-public class HybridEventListener<TArgs>
+public class HybridEventListener<TCorroborateArgs, TClaimArgs, TInvariantArgs>
 {
 	/// <summary>
 	/// Defines the signature for the <see cref="CorroborateClaim"/> property.
 	/// </summary>
 	/// <param name="args">The arguments of the raised dispatcher.</param>
 	/// <returns>A <see cref="bool"/> indicating if this listener "claims" the event.</returns>
-	public delegate bool CorroborateDelegate(TArgs args);
+	public delegate bool CorroborateDelegate(TCorroborateArgs args);
 
 	/// <summary>
-	/// Defines the signature for the <see cref="ClaimedBehaviour"/> and <see cref="InvarintBehaviour"/> property.
+	/// Defines the signature for the <see cref="ClaimedBehaviour"/> property.
 	/// </summary>
 	/// <param name="args">The arguments of the raised dispatcher.</param>
-	public delegate void BehaviourDelegate(TArgs args);
+	public delegate void ClaimedBehaviourDelegate(TClaimArgs args);
+
+	/// <summary>
+	/// Defines the signature for the <see cref="InvarintBehaviour"/> property.
+	/// </summary>
+	/// <param name="args">The arguments of the raised dispatcher.</param>
+	public delegate void InvariantBehaviourDelegate(TInvariantArgs args);
 
 	/// <summary>
 	/// Used to determinate if this listener will "claim" the event invokation to realize
@@ -29,13 +34,13 @@ public class HybridEventListener<TArgs>
 	/// The behaviour of this listener that will be executed if the event invokation is "claimed"
 	/// by this <see cref="HybridEventListener{TArgs}"/>.
 	/// </summary>
-	public BehaviourDelegate? ClaimedBehaviour { get; set; }
+	public ClaimedBehaviourDelegate? ClaimedBehaviour { get; set; }
 
 	/// <summary>
 	/// The behaviour of this listener that will be executed
 	/// even if the event wasn't "claimed" by this <see cref="HybridEventListener{TArgs}"/>.
 	/// </summary>
-	public BehaviourDelegate? InvarintBehaviour { get; set; }
+	public InvariantBehaviourDelegate? InvarintBehaviour { get; set; }
 
 	/// <summary>
 	/// Used to define the order of corroborance in a <see cref="HybridEventDispatcher{TArgs}"/>.
@@ -55,5 +60,21 @@ public class HybridEventListener<TArgs>
 	}
 	private byte _priority;
 
-	internal List<HybridEventDispatcher<TArgs>?> Dispatchers { get; } = [];
+	internal List<HybridEventDispatcher<TCorroborateArgs, TClaimArgs, TInvariantArgs>> Dispatchers { get; } = [];
+}
+
+/// <summary>
+/// Manages the behaviour taken in the invokation of an event from a <see cref="HybridEventDispatcher{TArgs}"/>.<br></br>
+/// </summary>
+public class HybridEventListener<TCorroborateArgs, TBehaviourArgs> : HybridEventListener<TCorroborateArgs, TBehaviourArgs, TBehaviourArgs>
+{
+
+}
+
+/// <summary>
+/// Manages the behaviour taken in the invokation of an event from a <see cref="HybridEventDispatcher{TArgs}"/>.<br></br>
+/// </summary>
+public class HybridEventListener<TArgs> : HybridEventListener<TArgs, TArgs>
+{
+
 }
