@@ -1,4 +1,4 @@
-﻿namespace Acrux.EventSystems.HES;
+﻿namespace Acrux.EventSystems.Hybrid;
 
 public class HybridEventDispatcher<TCorroborateArgs, TClaimArgs, TInvariantArgs>
 {

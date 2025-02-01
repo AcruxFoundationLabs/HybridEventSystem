@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Acrux.EventSystems.HES;
+namespace Acrux.EventSystems.Hybrid;
 
 public class ValueOrFunc<T> : Either<T, Func<T>>
 {

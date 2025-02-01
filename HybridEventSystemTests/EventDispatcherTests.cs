@@ -1,4 +1,4 @@
-﻿namespace Acrux.EventSystems.HES.Tests;
+﻿namespace Acrux.EventSystems.Hybrid.Tests;
 
 [TestClass]
 public class EventDispatcherTests

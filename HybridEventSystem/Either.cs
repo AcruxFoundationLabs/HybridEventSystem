@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Acrux.EventSystems.HES;
+namespace Acrux.EventSystems.Hybrid;
 
 /// <summary>
 /// Stores a value whose type is either <typeparamref name="T1"/>
